@@ -1,0 +1,8 @@
+{
+  "name": "ContractGuard",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mikelarras-jkl/ContractGuard.git",
+  "author": "Mikel <mikel.arrastia@jakala.com>",
+  "license": "MIT"
+}
