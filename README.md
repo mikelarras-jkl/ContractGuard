@@ -35,21 +35,22 @@ El repositorio **anfitrión** (fake-server, dataset del TFM) es producto de refe
 
 - **Node.js** — versión mínima [TBD] cuando se fije en `package.json` / CI.
 - **Yarn** — gestor de paquetes del proyecto (no usar `npm install` ni `npm ci` aquí).
+- **TypeScript** — lenguaje de consenso para código y tests.
 
 ## Uso
 
-> Los scripts de `package.json` están **pendientes** hasta existir la implementación de la CLI.
-
 ```bash
 yarn install
+yarn test
 ```
-
-Comandos previstos (aún no disponibles):
 
 | Comando | Propósito |
 | ------- | --------- |
-| `yarn test` | Suite de tests de la CLI sobre fixtures. |
-| `yarn validate` | Invocar el auditor sobre una ruta (equivalente al binario `schema-auditor`). |
+| `yarn test` | Suite Jest (`tests/**/*.test.ts`). Incluye un dummy de cableado; los de la CLI se irán añadiendo con TDD. |
+| `yarn typecheck` | `tsc --noEmit` (TypeScript estricto). |
+| `yarn validate` | Invocar el auditor sobre una ruta (equivalente al binario `schema-auditor`). **Pendiente.** |
+
+Un hook **pre-push** de [Husky](https://typicode.github.io/husky/) ejecuta `yarn test` antes de cada `git push`. Si la suite falla, el push se aborta.
 
 ## Desarrollo
 

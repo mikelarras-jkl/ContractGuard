@@ -11,6 +11,7 @@ ContractGuard es una herramienta **CLI/script determinista** para comprobar cont
 
 ## Stack
 
+- Lenguaje: **TypeScript** siempre que se pueda (código de aplicación, tests y tipos). No añadir `.js` de aplicación salvo que una herramienta lo exija (p. ej. `jest.config.js`).
 - Gestor de paquetes: **Yarn** (`yarn install`, `yarn test`, etc.).
 - **No** usar `npm install` ni `npm ci` para dependencias de este repositorio.
 

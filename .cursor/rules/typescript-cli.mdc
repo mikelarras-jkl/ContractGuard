@@ -16,7 +16,7 @@ Ajustar en el primer commit de código si hace falta, pero mantener un solo esti
 | ---- | --- |
 | `src/` | Descubrimiento, reglas, mutaciones, informe y lógica compartida. |
 | `bin/` o `src/cli.ts` | Punto de entrada del binario (`schema-auditor` o el nombre en `package.json`). |
-| `tests/` o `**/*.test.ts` junto al módulo | Tests; elegir una convención y no mezclarlas. |
+| `tests/**/*.test.ts` | Tests Jest en TypeScript; no mezclar `.test.js`. |
 | `fixtures/` | Árboles schema–example mínimos para tests de la CLI (sin depender del repo anfitrión). |
 
 Exportar una **API pública** de auditoría (p. ej. auditar una ruta y devolver diagnósticos + metadatos) separada del parsing de argv, para poder probar sin subprocess cuando convenga.
@@ -40,7 +40,8 @@ Preferir tests de integración sobre fixtures frente a mocks de parsers internos
 
 ## Código
 
-- TypeScript o JavaScript plano: si se empieza solo con `.js`/`.mjs`, mantener el mismo layout y seams; no hace falta renombrar esta regla hasta que el glob deje de coincidir.
+- **TypeScript por defecto**: archivos nuevos en `.ts`; `strict` y `noUncheckedIndexedAccess` en `tsconfig.json`. No convertir a `.js` “por simplicidad”.
+- Excepción: configs de herramientas que no carguen TS de forma nativa (p. ej. `jest.config.js`).
 - Módulos pequeños por responsabilidad (descubrimiento, una regla, mutaciones, informe); evitar “god objects”.
 - Errores internos: convertir en **diagnósticos** accionables cuando el usuario pueda actuar; propagar fallos irrecuperables con contexto (ruta, regla).
 - Sin secretos en código ni fixtures; rutas y ejemplos sintéticos en tests.
