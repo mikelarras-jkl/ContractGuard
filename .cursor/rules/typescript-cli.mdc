@@ -1,0 +1,56 @@
+---
+description: Estructura CLI, tests y convenciones de código ContractGuard
+globs: "**/*.{js,ts,mjs,cjs}"
+alwaysApply: false
+---
+
+# ContractGuard — código, CLI y tests
+
+Esta regla aplica al implementar o modificar JavaScript/TypeScript del repo. El charter global está en [contractguard.mdc](contractguard.mdc); el vocabulario de dominio en [GLOSSARY.md](GLOSSARY.md).
+
+## Layout sugerido
+
+Ajustar en el primer commit de código si hace falta, pero mantener un solo estilo en todo el repo:
+
+| Ruta | Rol |
+| ---- | --- |
+| `src/` | Descubrimiento, reglas, mutaciones, informe y lógica compartida. |
+| `bin/` o `src/cli.ts` | Punto de entrada del binario (`schema-auditor` o el nombre en `package.json`). |
+| `tests/` o `**/*.test.ts` junto al módulo | Tests; elegir una convención y no mezclarlas. |
+| `fixtures/` | Árboles schema–example mínimos para tests de la CLI (sin depender del repo anfitrión). |
+
+Exportar una **API pública** de auditoría (p. ej. auditar una ruta y devolver diagnósticos + metadatos) separada del parsing de argv, para poder probar sin subprocess cuando convenga.
+
+## Seams de test
+
+Probar solo en fronteras acordadas (véase [.agents/skills/tdd/SKILL.md](.agents/skills/tdd/SKILL.md)):
+
+1. **CLI** — invocación real o helper que capture `stdout`, `stderr` y **exit code**; salida estable para pipes y CI.
+2. **API exportada** — misma semántica que la CLI sobre fixtures: mismos inputs → mismos diagnósticos e informe.
+3. **Formato de informe** — JSON/Markdown reproducible cuando exista como contrato público.
+
+Preferir tests de integración sobre fixtures frente a mocks de parsers internos (Ajv, walkers del schema). Cada **regla** y tipo de hallazgo debe usar el **nombre estable** del glosario en tests y mensajes.
+
+## CLI
+
+- Exit code `0` si la corrida termina sin fallos de validación acordados; `≠ 0` si hay errores (o fallo de uso/entrada), de forma documentada y consistente.
+- Mensajes en **stderr** para errores de usuario o del sistema; **stdout** para informe o modo machine-readable cuando aplique.
+- Sin lecturas de red, reloj ni estado global no documentado en el camino de validación (alineado con determinismo del charter).
+- Opciones y flags: nombres claros; comportamiento por defecto seguro para CI.
+
+## Código
+
+- TypeScript o JavaScript plano: si se empieza solo con `.js`/`.mjs`, mantener el mismo layout y seams; no hace falta renombrar esta regla hasta que el glob deje de coincidir.
+- Módulos pequeños por responsabilidad (descubrimiento, una regla, mutaciones, informe); evitar “god objects”.
+- Errores internos: convertir en **diagnósticos** accionables cuando el usuario pueda actuar; propagar fallos irrecuperables con contexto (ruta, regla).
+- Sin secretos en código ni fixtures; rutas y ejemplos sintéticos en tests.
+
+## `package.json`
+
+- Usar **Yarn** para dependencias y scripts (`yarn test`, `yarn validate` o equivalente cuando existan).
+- Cada feature nueva que afecte al comportamiento observable debe ir acompañada de script de test actualizado y, si aplica, de un comando de validación documentado en [README.md](README.md).
+
+## Referencias rápidas
+
+- Ciclo red → green: skill TDD del repo; un slice vertical por regla o comportamiento.
+- Decisiones de estructura persistentes: `docs/adr/` cuando existan.

@@ -1,0 +1,38 @@
+---
+description: Propósito y convenciones generales de ContractGuard
+alwaysApply: true
+---
+
+# ContractGuard — charter del proyecto
+
+## Misión
+
+ContractGuard es una herramienta **CLI/script determinista** para comprobar contratos API (schemas JSON, examples y reglas del proyecto). La salida debe ser **reproducible** y apta para **CI**: mismos inputs → mismos diagnósticos y **código de salida**; mensajes de error accionables.
+
+## Stack
+
+- Gestor de paquetes: **Yarn** (`yarn install`, `yarn test`, etc.).
+- **No** usar `npm install` ni `npm ci` para dependencias de este repositorio.
+
+## Metodología (TDD)
+
+- Desarrollo **test-first**: escribir o actualizar el test que falla **antes** de implementar el comportamiento.
+- Seguir [.agents/skills/tdd/SKILL.md](.agents/skills/tdd/SKILL.md): *vertical slices*, **seams** públicos (CLI y API exportada), ciclo red → green sin anticipar features futuras en el mismo paso.
+- Cada regla o comportamiento nuevo debe tener un **nombre estable** en tests y en mensajes (véase glosario).
+
+## Calidad
+
+- Cambios **mínimos** y acotados al objetivo; respetar convenciones ya presentes en el repo.
+- **No** commitear secretos (`.env`, tokens, credenciales).
+- No mezclar en este charter el estilo de código de `src/` o tests; eso va en reglas por glob cuando existan.
+
+## Determinismo
+
+- La validación y los informes no deben depender de red, hora del sistema ni estado global no documentado, salvo que una decisión explícita (ADR o glosario) lo permita.
+- Tests y CLI: comportamiento observable estable (stdout/stderr, exit code, formato de informe).
+
+## Dónde leer más
+
+- Vocabulario y reglas de dominio: [GLOSSARY.md](GLOSSARY.md).
+- Decisiones arquitectónicas: `docs/adr/` cuando existan.
+- Propósito breve para humanos: [README.md](README.md).
