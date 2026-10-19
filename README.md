@@ -41,16 +41,18 @@ El repositorio **anfitrión** (fake-server, dataset del TFM) es producto de refe
 
 ```bash
 yarn install
+yarn lint
 yarn test
 ```
 
 | Comando | Propósito |
 | ------- | --------- |
+| `yarn lint` | ESLint en todo el repo (`--max-warnings 0`). |
 | `yarn test` | Suite Jest (`tests/**/*.test.ts`). Incluye un dummy de cableado; los de la CLI se irán añadiendo con TDD. |
 | `yarn typecheck` | `tsc --noEmit` (TypeScript estricto). |
 | `yarn validate` | Invocar el auditor sobre una ruta (equivalente al binario `schema-auditor`). **Pendiente.** |
 
-Un hook **pre-push** de [Husky](https://typicode.github.io/husky/) ejecuta `yarn test` antes de cada `git push`. Si la suite falla, el push se aborta.
+Hooks de [Husky](https://typicode.github.io/husky/): **pre-commit** ejecuta `yarn lint`; **pre-push** ejecuta `yarn lint && yarn test`. Si lint o tests fallan, el commit o el push se aborta.
 
 ## Desarrollo
 

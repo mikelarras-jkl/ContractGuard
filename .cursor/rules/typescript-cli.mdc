@@ -41,14 +41,14 @@ Preferir tests de integración sobre fixtures frente a mocks de parsers internos
 ## Código
 
 - **TypeScript por defecto**: archivos nuevos en `.ts`; `strict` y `noUncheckedIndexedAccess` en `tsconfig.json`. No convertir a `.js` “por simplicidad”.
-- Excepción: configs de herramientas que no carguen TS de forma nativa (p. ej. `jest.config.js`).
+- Excepción: configs de herramientas que no carguen TS de forma nativa (p. ej. `jest.config.js`, `eslint.config.mjs`).
 - Módulos pequeños por responsabilidad (descubrimiento, una regla, mutaciones, informe); evitar “god objects”.
 - Errores internos: convertir en **diagnósticos** accionables cuando el usuario pueda actuar; propagar fallos irrecuperables con contexto (ruta, regla).
 - Sin secretos en código ni fixtures; rutas y ejemplos sintéticos en tests.
 
 ## `package.json`
 
-- Usar **Yarn** para dependencias y scripts (`yarn test`, `yarn validate` o equivalente cuando existan).
+- Usar **Yarn** para dependencias y scripts (`yarn test`, `yarn lint`, `yarn validate` o equivalente cuando existan).
 - Cada feature nueva que afecte al comportamiento observable debe ir acompañada de script de test actualizado y, si aplica, de un comando de validación documentado en [README.md](README.md).
 
 ## Referencias rápidas

@@ -24,6 +24,7 @@ ContractGuard es una herramienta **CLI/script determinista** para comprobar cont
 ## Calidad
 
 - Cambios **mínimos** y acotados al objetivo; respetar convenciones ya presentes en el repo.
+- **Lint**: `yarn lint` debe pasar; los hooks **pre-commit** y **pre-push** abortan si hay fallos de ESLint (incluidas advertencias: `--max-warnings 0`).
 - **No** commitear secretos (`.env`, tokens, credenciales).
 - No mezclar en este charter el estilo de código de `src/` o tests; eso va en reglas por glob cuando existan.
 
