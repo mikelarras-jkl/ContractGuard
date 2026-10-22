@@ -1,0 +1,10 @@
+{
+  "id": "ord-1",
+  "email": "buyer@example.com",
+  "status": "open",
+  "lines": [
+    {
+      "sku": "SKU-1"
+    }
+  ]
+}
