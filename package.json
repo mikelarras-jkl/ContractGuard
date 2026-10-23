@@ -10,7 +10,7 @@
     "test": "jest",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "validate": "tsc -p tsconfig.build.json && node dist/cli.js"
+    "validate": "tsc -p tsconfig.build.json && node contractGuard/cli.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
