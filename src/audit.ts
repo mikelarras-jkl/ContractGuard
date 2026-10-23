@@ -43,15 +43,53 @@ const SCHEMA_KEYWORDS = new Set([
 const SCHEMA_SUFFIX = ".schema.json";
 const EXAMPLE_SUFFIX = ".example.json";
 
-export function auditPath(target: string): Diagnostic[] {
+export function auditPath(target: string, pairingFile?: string): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
-  for (const schemaFile of discoverSchemaFiles(target)) {
+  const schemaFiles = uniquePaths([
+    ...discoverSchemaFiles(target),
+    ...(pairingFile === undefined ? [] : schemasFromPairingFile(pairingFile)),
+  ]);
+  for (const schemaFile of schemaFiles) {
     const raw = fs.readFileSync(schemaFile, "utf8");
     const mapped = parseJsonSourceMap(raw);
     const file = path.relative(process.cwd(), schemaFile) || schemaFile;
     diagnostics.push(...auditSchema(mapped.data, mapped.pointers, file));
   }
   return diagnostics;
+}
+
+function uniquePaths(files: string[]): string[] {
+  return [...new Set(files.map((file) => path.resolve(file)))];
+}
+
+function schemasFromPairingFile(pairingFile: string): string[] {
+  const manifestPath = path.resolve(pairingFile);
+  if (!fs.existsSync(manifestPath)) {
+    return [];
+  }
+  const parsed: unknown = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+
+  const baseDir = path.dirname(manifestPath);
+  const schemas: string[] = [];
+  for (const entry of parsed) {
+    if (!Array.isArray(entry) || entry.length < 2) {
+      continue;
+    }
+    const exampleRel = entry[0];
+    const schemaRel = entry[1];
+    if (typeof exampleRel !== "string" || typeof schemaRel !== "string") {
+      continue;
+    }
+    const exampleFile = path.resolve(baseDir, exampleRel);
+    const schemaFile = path.resolve(baseDir, schemaRel);
+    if (fs.existsSync(exampleFile) && fs.existsSync(schemaFile)) {
+      schemas.push(schemaFile);
+    }
+  }
+  return schemas;
 }
 
 function discoverSchemaFiles(root: string): string[] {
