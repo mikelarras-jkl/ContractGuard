@@ -50,7 +50,7 @@ yarn test
 | `yarn lint` | ESLint en todo el repo (`--max-warnings 0`). |
 | `yarn test` | Suite Jest (`tests/**/*.test.ts`). Incluye un dummy de cableado; los de la CLI se irán añadiendo con TDD. |
 | `yarn typecheck` | `tsc --noEmit` (TypeScript estricto). |
-| `yarn validate` | Audita un árbol de pares `schema.json` + `example.json` (reglas estructurales; sin Ajv ni mutaciones en este slice). |
+| `yarn validate` | Audita un árbol de pares `schema.json`+`example.json` o `*.schema.json`+`*.example.json` con el mismo prefijo (reglas estructurales; sin Ajv). |
 
 Hooks de [Husky](https://typicode.github.io/husky/): **pre-commit** ejecuta `yarn lint`; **pre-push** ejecuta `yarn lint && yarn test`. Si lint o tests fallan, el commit o el push se aborta.
 

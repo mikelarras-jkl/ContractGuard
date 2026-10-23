@@ -93,7 +93,7 @@ Corridas en el repositorio anfitrión o sandbox; no en el repo vacío de la CLI.
 ## Términos pendientes
 
 - [TBD] Nombres canónicos exactos de reglas en código (snake-case vs kebab-case) y mapeo a severidad por regla.
-- [TBD] Convención de emparejamiento schema/example en el árbol de directorios (nombres de archivo en fake-server).
+- Emparejamiento: `schema.json` con `example.json` en la misma carpeta, o `*.schema.json` con `*.example.json` **mismo prefijo** (p. ej. `alertas.post.res.schema.json` ↔ `alertas.post.res.example.json`).
 - [TBD] Draft(s) de JSON Schema soportados en Ajv para el MVP.
 - [TBD] Layout de `eval/` o sandbox (snapshot de skill, dataset, protocolo) frente a dejar el material solo en el repositorio anfitrión.
 - [TBD] Métricas del TFM en el informe de la CLI vs solo en la evaluación externa.

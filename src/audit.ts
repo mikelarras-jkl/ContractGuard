@@ -40,10 +40,12 @@ const SCHEMA_KEYWORDS = new Set([
   "default",
 ]);
 
+const SCHEMA_SUFFIX = ".schema.json";
+const EXAMPLE_SUFFIX = ".example.json";
+
 export function auditPath(target: string): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
-  for (const pairDir of discoverPairs(target)) {
-    const schemaFile = path.join(pairDir, "schema.json");
+  for (const schemaFile of discoverSchemaFiles(target)) {
     const raw = fs.readFileSync(schemaFile, "utf8");
     const mapped = parseJsonSourceMap(raw);
     const file = path.relative(process.cwd(), schemaFile) || schemaFile;
@@ -52,15 +54,32 @@ export function auditPath(target: string): Diagnostic[] {
   return diagnostics;
 }
 
-function discoverPairs(root: string): string[] {
+function discoverSchemaFiles(root: string): string[] {
   const found: string[] = [];
 
   function visit(dir: string): void {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
-    const names = new Set(entries.map((entry) => entry.name));
+    const names = new Set(
+      entries.filter((entry) => entry.isFile()).map((entry) => entry.name),
+    );
+
     if (names.has("schema.json") && names.has("example.json")) {
-      found.push(dir);
+      found.push(path.join(dir, "schema.json"));
     }
+
+    for (const name of names) {
+      if (!name.endsWith(SCHEMA_SUFFIX)) {
+        continue;
+      }
+      const stem = name.slice(0, -SCHEMA_SUFFIX.length);
+      if (stem === "") {
+        continue;
+      }
+      if (names.has(`${stem}${EXAMPLE_SUFFIX}`)) {
+        found.push(path.join(dir, name));
+      }
+    }
+
     for (const entry of entries) {
       if (entry.isDirectory()) {
         visit(path.join(dir, entry.name));
