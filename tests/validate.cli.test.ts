@@ -1,4 +1,6 @@
 import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 const repoRoot = path.resolve(__dirname, "..");
@@ -102,4 +104,25 @@ test("validate walks a tree of schema-example pairs", () => {
   expect(result.stdout).toContain(
     "tests/fixtures/contrato-incorrecto/schema.json:15: required-on-array: /lines",
   );
+});
+
+test("contractGuard/cli.js runs without a local json-source-map install", () => {
+  const build = spawnSync("yarn", ["build"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+  expect(build.status).toBe(0);
+
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "contractguard-bundle-"));
+  fs.copyFileSync(path.join(repoRoot, "contractGuard", "cli.js"), path.join(tmp, "cli.js"));
+
+  const fixture = path.join(repoRoot, "tests", "fixtures", "contrato-correcto");
+  const result = spawnSync("node", ["cli.js", fixture], {
+    cwd: tmp,
+    encoding: "utf8",
+    env: { ...process.env, NODE_PATH: "" },
+  });
+
+  expect(result.stderr).not.toMatch(/Cannot find module/);
+  expect(result.status).toBe(0);
 });

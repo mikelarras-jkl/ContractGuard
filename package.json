@@ -10,12 +10,14 @@
     "test": "jest",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "validate": "tsc -p tsconfig.build.json && node dist/cli.js"
+    "build": "esbuild src/cli.ts --bundle --platform=node --format=cjs --outfile=contractGuard/cli.js && node -e \"require('node:fs').rmSync('contractGuard/audit.js',{force:true})\"",
+    "validate": "yarn build && node contractGuard/cli.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
     "eslint": "^10.13.0",
     "eslint-plugin-jest": "^29.17.0",
     "globals": "^17.13.0",

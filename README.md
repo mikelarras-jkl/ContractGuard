@@ -50,7 +50,18 @@ yarn test
 | `yarn lint` | ESLint en todo el repo (`--max-warnings 0`). |
 | `yarn test` | Suite Jest (`tests/**/*.test.ts`). Incluye un dummy de cableado; los de la CLI se irán añadiendo con TDD. |
 | `yarn typecheck` | `tsc --noEmit` (TypeScript estricto). |
-| `yarn validate` | Audita un árbol de pares `schema.json`+`example.json` o `*.schema.json`+`*.example.json` con el mismo prefijo. Segundo argumento opcional: JSON de pares `[example, schema]` (rutas relativas a ese archivo). |
+| `yarn build` | Genera `contractGuard/cli.js` autónomo (`json-source-map` va embebido). |
+| `yarn validate` | Compila y audita un árbol de pares `schema.json`+`example.json` o `*.schema.json`+`*.example.json` con el mismo prefijo. Segundo argumento opcional: JSON de pares `[example, schema]` (rutas relativas a ese archivo). |
+
+### Usar solo `contractGuard/` en otro proyecto
+
+En este repo: `yarn install && yarn build`. Copia la carpeta `contractGuard/` (basta `cli.js`). En el otro proyecto, con Node:
+
+```bash
+node contractGuard/cli.js api/fake-server
+```
+
+No hace falta instalar `json-source-map` allí.
 
 Hooks de [Husky](https://typicode.github.io/husky/): **pre-commit** ejecuta `yarn lint`; **pre-push** ejecuta `yarn lint && yarn test`. Si lint o tests fallan, el commit o el push se aborta.
 
