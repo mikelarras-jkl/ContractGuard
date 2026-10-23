@@ -1,0 +1,10 @@
+[
+  [
+    "./aliasados/19-resumen.alt.json",
+    "./aliasados/19-resumen.get.res.schema.json"
+  ],
+  [
+    "./aliasados/20-detalle.fake.json",
+    "./aliasados/20-detalle.get.res.schema.json"
+  ]
+]

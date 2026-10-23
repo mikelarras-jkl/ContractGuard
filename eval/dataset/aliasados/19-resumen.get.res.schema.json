@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "a": {
+      "type": "array",
+      "required": [
+        "m"
+      ],
+      "properties": {
+        "m": {
+          "type": "string"
+        }
+      },
+      "items": {
+        "type": "object"
+      }
+    },
+    "b": {
+      "type": "array",
+      "required": [
+        "n"
+      ],
+      "properties": {
+        "n": {
+          "type": "string"
+        }
+      },
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "x": {
+    "type": "string"
+  },
+  "y": {
+    "type": "string"
+  }
+}
