@@ -26,10 +26,10 @@
           "type": "object"
         }
       }
-    },
-    "email": {
-      "type": "string"
     }
+  },
+  "email": {
+    "type": "string"
   },
   "required": ["id", "email"]
 }
