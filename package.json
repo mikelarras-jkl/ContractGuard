@@ -24,5 +24,8 @@
     "ts-jest": "^29.4.15",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.72.0"
+  },
+  "dependencies": {
+    "json-source-map": "^0.6.1"
   }
 }

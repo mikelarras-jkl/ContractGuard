@@ -8,7 +8,9 @@ if (target === undefined) {
 
 const diagnostics = auditPath(target);
 for (const diagnostic of diagnostics) {
-  process.stdout.write(`${diagnostic.rule}: ${diagnostic.path}\n`);
+  process.stdout.write(
+    `${diagnostic.file}:${diagnostic.line}: ${diagnostic.rule}: ${diagnostic.path}\n`,
+  );
 }
 
 process.exit(diagnostics.length === 0 ? 0 : 1);

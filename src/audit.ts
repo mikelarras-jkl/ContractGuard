@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { parse as parseJsonSourceMap } from "json-source-map";
 
 export type Diagnostic = {
   rule:
@@ -9,7 +10,17 @@ export type Diagnostic = {
     | "orphan-property-keys"
     | "required-not-in-properties";
   path: string;
+  file: string;
+  line: number;
 };
+
+type Pointers = Record<
+  string,
+  {
+    key?: { line: number };
+    value?: { line: number };
+  }
+>;
 
 const SCHEMA_KEYWORDS = new Set([
   "$schema",
@@ -32,10 +43,11 @@ const SCHEMA_KEYWORDS = new Set([
 export function auditPath(target: string): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   for (const pairDir of discoverPairs(target)) {
-    const schema = JSON.parse(
-      fs.readFileSync(path.join(pairDir, "schema.json"), "utf8"),
-    ) as unknown;
-    diagnostics.push(...auditSchema(schema));
+    const schemaFile = path.join(pairDir, "schema.json");
+    const raw = fs.readFileSync(schemaFile, "utf8");
+    const mapped = parseJsonSourceMap(raw);
+    const file = path.relative(process.cwd(), schemaFile) || schemaFile;
+    diagnostics.push(...auditSchema(mapped.data, mapped.pointers, file));
   }
   return diagnostics;
 }
@@ -73,46 +85,67 @@ function propertiesHasItems(properties: unknown): boolean {
   );
 }
 
-function auditSchema(node: unknown, pointer = ""): Diagnostic[] {
+function joinPointer(base: string, token: string): string {
+  return `${base}/${token.replace(/~/g, "~0").replace(/\//g, "~1")}`;
+}
+
+function lineOf(pointers: Pointers, jsonPointer: string): number {
+  const loc = pointers[jsonPointer];
+  if (loc?.key !== undefined) {
+    return loc.key.line + 1;
+  }
+  if (loc?.value !== undefined) {
+    return loc.value.line + 1;
+  }
+  return 1;
+}
+
+function auditSchema(
+  node: unknown,
+  pointers: Pointers,
+  file: string,
+  displayPointer = "",
+  jsonPointer = "",
+): Diagnostic[] {
   if (node === null || typeof node !== "object" || Array.isArray(node)) {
     return [];
   }
 
   const schema = node as Record<string, unknown>;
   const diagnostics: Diagnostic[] = [];
-  const here = pointer === "" ? "/" : pointer;
+  const here = displayPointer === "" ? "/" : displayPointer;
   const properties = schema.properties;
 
+  const locating = (rule: Diagnostic["rule"], displayPath: string, locPointer: string): Diagnostic => ({
+    rule,
+    path: displayPath,
+    file,
+    line: lineOf(pointers, locPointer),
+  });
+
   if (schema.type === "array" && Array.isArray(schema.required)) {
-    diagnostics.push({
-      rule: "required-on-array",
-      path: here,
-    });
+    diagnostics.push(
+      locating("required-on-array", here, joinPointer(jsonPointer, "required")),
+    );
   }
 
   if (Array.isArray(schema.items)) {
-    diagnostics.push({
-      rule: "items-as-array",
-      path: here,
-    });
+    diagnostics.push(
+      locating("items-as-array", here, joinPointer(jsonPointer, "items")),
+    );
   }
 
-  if (
-    schema.type === "array" &&
-    propertiesHasItems(schema.properties)
-  ) {
-    diagnostics.push({
-      rule: "properties-items-in-array",
-      path: here,
-    });
+  if (schema.type === "array" && propertiesHasItems(schema.properties)) {
+    diagnostics.push(
+      locating("properties-items-in-array", here, joinPointer(jsonPointer, "properties")),
+    );
   }
 
   for (const key of Object.keys(schema)) {
     if (!SCHEMA_KEYWORDS.has(key) && isSchemaLike(schema[key])) {
-      diagnostics.push({
-        rule: "orphan-property-keys",
-        path: `${pointer}/${key}`,
-      });
+      diagnostics.push(
+        locating("orphan-property-keys", `${displayPointer}/${key}`, joinPointer(jsonPointer, key)),
+      );
     }
   }
 
@@ -123,17 +156,28 @@ function auditSchema(node: unknown, pointer = ""): Diagnostic[] {
         : new Set<string>();
     for (const name of schema.required) {
       if (typeof name === "string" && !declared.has(name)) {
-        diagnostics.push({
-          rule: "required-not-in-properties",
-          path: `${pointer}/${name}`,
-        });
+        diagnostics.push(
+          locating(
+            "required-not-in-properties",
+            `${displayPointer}/${name}`,
+            joinPointer(jsonPointer, "required"),
+          ),
+        );
       }
     }
   }
 
   if (properties !== null && typeof properties === "object" && !Array.isArray(properties)) {
     for (const [name, child] of Object.entries(properties as Record<string, unknown>)) {
-      diagnostics.push(...auditSchema(child, `${pointer}/${name}`));
+      diagnostics.push(
+        ...auditSchema(
+          child,
+          pointers,
+          file,
+          `${displayPointer}/${name}`,
+          joinPointer(joinPointer(jsonPointer, "properties"), name),
+        ),
+      );
     }
   }
 

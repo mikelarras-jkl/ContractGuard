@@ -15,7 +15,9 @@ test("validate reports required-on-array on contrato-incorrecto", () => {
   const result = validate(fixture);
 
   expect(result.status).not.toBe(0);
-  expect(result.stdout).toContain("required-on-array: /lines");
+  expect(result.stdout).toContain(
+    "tests/fixtures/contrato-incorrecto/schema.json:15: required-on-array: /lines",
+  );
 });
 
 test("validate reports items-as-array on contrato-incorrecto", () => {
@@ -23,7 +25,9 @@ test("validate reports items-as-array on contrato-incorrecto", () => {
   const result = validate(fixture);
 
   expect(result.status).not.toBe(0);
-  expect(result.stdout).toContain("items-as-array: /lines");
+  expect(result.stdout).toContain(
+    "tests/fixtures/contrato-incorrecto/schema.json:16: items-as-array: /lines",
+  );
 });
 
 test("validate reports properties-items-in-array on contrato-incorrecto", () => {
@@ -31,7 +35,9 @@ test("validate reports properties-items-in-array on contrato-incorrecto", () => 
   const result = validate(fixture);
 
   expect(result.status).not.toBe(0);
-  expect(result.stdout).toContain("properties-items-in-array: /lines");
+  expect(result.stdout).toContain(
+    "tests/fixtures/contrato-incorrecto/schema.json:24: properties-items-in-array: /lines",
+  );
 });
 
 test("validate reports orphan-property-keys on contrato-incorrecto", () => {
@@ -39,7 +45,9 @@ test("validate reports orphan-property-keys on contrato-incorrecto", () => {
   const result = validate(fixture);
 
   expect(result.status).not.toBe(0);
-  expect(result.stdout).toContain("orphan-property-keys: /email");
+  expect(result.stdout).toContain(
+    "tests/fixtures/contrato-incorrecto/schema.json:31: orphan-property-keys: /email",
+  );
 });
 
 test("validate reports required-not-in-properties on contrato-incorrecto", () => {
@@ -47,7 +55,9 @@ test("validate reports required-not-in-properties on contrato-incorrecto", () =>
   const result = validate(fixture);
 
   expect(result.status).not.toBe(0);
-  expect(result.stdout).toContain("required-not-in-properties: /email");
+  expect(result.stdout).toContain(
+    "tests/fixtures/contrato-incorrecto/schema.json:34: required-not-in-properties: /email",
+  );
 });
 
 test("validate accepts contrato-correcto", () => {
@@ -66,5 +76,7 @@ test("validate walks a tree of schema-example pairs", () => {
   const result = validate(path.join("tests", "fixtures"));
 
   expect(result.status).not.toBe(0);
-  expect(result.stdout).toContain("required-on-array: /lines");
+  expect(result.stdout).toContain(
+    "tests/fixtures/contrato-incorrecto/schema.json:15: required-on-array: /lines",
+  );
 });
